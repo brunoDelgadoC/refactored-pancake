@@ -3,6 +3,11 @@ using System.Linq;
 using System.Web.Mvc;
 using Quote.Contracts;
 using Quote.Models;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Net;
+
 
 namespace PruebaIngreso.Controllers
 {
@@ -52,6 +57,11 @@ namespace PruebaIngreso.Controllers
 
         public ActionResult Test3()
         {
+
+            var result = GetData("E-U10-UNILATIN");
+
+            ViewBag.Margin = result;
+
             return View();
         }
 
@@ -74,6 +84,30 @@ namespace PruebaIngreso.Controllers
 
             var result = this.quote.Quote(request);
             return View(result.TourQuotes);
+        }
+
+        private static string GetData(string id)
+        {
+            var url = "https://refactored-pancake.free.beeceptor.com/margin/" + id;
+
+            using (var client = new HttpClient())
+            {
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                var responseString = "0.0";
+                try
+                {
+                    responseString = client.GetStringAsync(url).Result;
+                    
+                }
+                catch (Exception e)
+                {
+                    //deal with it 
+                }
+
+                return responseString;
+
+            }
         }
     }
 }
